@@ -50,19 +50,19 @@ public class SerialZWaveConnector implements ControllerConnector {
      * @throws ZWaveException if unable to connect to the serial device
      */
     public synchronized void connect() throws ZWaveException {
-        if(StringUtils.isEmpty(portName)) {
+        if(StringUtils.isEmpty(getPortName())) {
             throw new ZWaveConfigurationException("No port configured for ZWave");
         }
 
         if(!isConnected) {
-            LOG.info("Connecting to ZWave serial port device: {}", portName);
+            LOG.info("Connecting to ZWave serial port device: {}", getPortName());
             try {
-                CommPortIdentifier portIdentifier = CommPortIdentifier.getPortIdentifier(portName);
+                CommPortIdentifier portIdentifier = CommPortIdentifier.getPortIdentifier(getPortName());
                 CommPort commPort = portIdentifier.open("zwaveport", 2000);
-                this.serialPort = (SerialPort) commPort;
-                this.serialPort.setSerialPortParams(115200, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
-                this.serialPort.enableReceiveThreshold(1);
-                this.serialPort.enableReceiveTimeout(ZWAVE_RECEIVE_TIMEOUT);
+                this.setSerialPort((SerialPort) commPort);
+                this.getSerialPort().setSerialPortParams(115200, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
+                this.getSerialPort().enableReceiveThreshold(1);
+                this.getSerialPort().enableReceiveTimeout(ZWAVE_RECEIVE_TIMEOUT);
 
                 this.receiverThread.start();
                 this.senderThread.start();
@@ -70,11 +70,11 @@ public class SerialZWaveConnector implements ControllerConnector {
                 this.isConnected = true;
                 LOG.info("ZWave controller is connected");
             } catch (NoSuchPortException e) {
-                throw new ZWaveException(String.format("Serial port %s does not exist", portName), e);
+                throw new ZWaveException(String.format("Serial port %s does not exist", getPortName()), e);
             } catch (PortInUseException e) {
-                throw new ZWaveException(String.format("Serial port %s is in use", portName), e);
+                throw new ZWaveException(String.format("Serial port %s is in use", getPortName()), e);
             } catch (UnsupportedCommOperationException e) {
-                throw new ZWaveException(String.format("Unsupported operation on serial port %s", portName), e);
+                throw new ZWaveException(String.format("Unsupported operation on serial port %s", getPortName()), e);
             }
         }
     }
@@ -88,17 +88,17 @@ public class SerialZWaveConnector implements ControllerConnector {
         joinUninterruptibly(senderThread);
         joinUninterruptibly(receiverThread);
 
-        serialPort.close();
-        serialPort = null;
+        getSerialPort().close();
+        setSerialPort(null);
         isConnected = false;
     }
 
     public OutputStream getOutputStream() {
-        return returnIfConnected(serialPort::getOutputStream);
+        return returnIfConnected(getSerialPort()::getOutputStream);
     }
 
     public InputStream getInputStream() {
-        return returnIfConnected(serialPort::getInputStream);
+        return returnIfConnected(getSerialPort()::getInputStream);
     }
 
     private <T> T returnIfConnected(IOSupplier<T> delegate) {
@@ -122,14 +122,30 @@ public class SerialZWaveConnector implements ControllerConnector {
 
     @Override
     public boolean isConnected() {
-        return serialPort != null;
+        return getSerialPort() != null;
     }
 
     @Override
     public String toString() {
         return "SerialZWaveConnector{" +
-                "portName='" + portName + '\'' +
-                ", serialPort=" + serialPort +
+                "portName='" + getPortName() + '\'' +
+                ", serialPort=" + getSerialPort() +
                 '}';
     }
+
+	public String getPortName() {
+		return portName;
+	}
+
+	public void setPortName(String portName) {
+		this.portName = portName;
+	}
+
+	public SerialPort getSerialPort() {
+		return serialPort;
+	}
+
+	public void setSerialPort(SerialPort serialPort) {
+		this.serialPort = serialPort;
+	}
 }
