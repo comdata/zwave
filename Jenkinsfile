@@ -37,7 +37,7 @@ pipeline {
 				}
 				stage('Deploy') {
 	        		steps {
-	        			sh 'mvn deploy:deploy-file -Dfile=target/zwave-1.0-SNAPSHOT.jar -DpomFile=pom.xml -DrepositoryId=archiva.snapshots -Durl=http://192.168.1.36:8080/repository/snapshots'
+	        			sh 'mvn deploy:deploy-file -Dfile=target/obera_zwave-1.0-SNAPSHOT.jar -DpomFile=pom.xml -DrepositoryId=archiva.snapshots -Durl=http://192.168.1.36:8080/repository/snapshots'
 	   				}
 	   			}
 	  
