@@ -28,20 +28,12 @@ pipeline {
 
 		}
 	
-	    stage('Deploy') {
-	       parallel {
-	      		 stage('JUnit') {
-					steps {
-						junit '**/target/surefire-reports/**/*.xml'  
-		            }
-				}
-				stage('Deploy') {
+	      						stage('Deploy') {
 	        		steps {
 	        			sh 'mvn deploy:deploy-file -Dfile=target/obera_zwave-1.0-SNAPSHOT.jar -DpomFile=pom.xml -DrepositoryId=archiva.snapshots -Durl=http://192.168.1.36:8080/repository/snapshots'
 	   				}
 	   			}
 	  
-	   		}	
-	    }
+	
     }
 }
