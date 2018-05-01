@@ -5,6 +5,7 @@ pipeline {
             args '-v /var/jenkins_home/.m2:/root/.m2 -v /root/.ssh:/root/.ssh' 
         }
     }
+	 triggers { upstream(upstreamProjects: 'obera-base', threshold: hudson.model.Result.SUCCESS) }
     stages {
 		stage('Prepare') {
 		    steps {
