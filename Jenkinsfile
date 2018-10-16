@@ -24,16 +24,14 @@ pipeline {
 
 		stage('Build') { 
 			steps {
-				sh 'mvn -T 1C -DskipTests -B clean install'
+				withMaven() {
+					sh 'mvn -T 1C -DskipTests -B clean deploy'
+				}
             }
 
 		}
 	
-	      						stage('Deploy') {
-	        		steps {
-	        			sh 'mvn deploy:deploy-file -Dfile=target/obera_zwave-1.0-SNAPSHOT.jar -DpomFile=pom.xml -DrepositoryId=archiva.snapshots -Durl=http://jenkins:8081/repository/snapshots'
-	   				}
-	   			}
+
 	  
 	
     }
