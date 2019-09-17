@@ -23,7 +23,9 @@ pipeline {
 
 		stage('Build') { 
 			steps {
-				sh 'mvn -T 1C -DskipTests -B clean install'
+				withMaven() {
+		           	sh '$MVN_CMD -T 1C -DskipTests -B clean install'
+            	}
             }
 
 		}
@@ -37,7 +39,9 @@ pipeline {
 				}
 				stage('Deploy') {
 	        		steps {
-	        			sh 'mvn deploy:deploy-file -Dfile=target/zwave-1.0-SNAPSHOT.jar -DpomFile=pom.xml -DrepositoryId=archiva.snapshots -Durl=http://192.168.1.36:8080/repository/snapshots'
+		        		withMaven() {
+		        			sh '$MVN_CMD deploy:deploy-file -Dfile=target/zwave-1.0-SNAPSHOT.jar -DpomFile=pom.xml -DrepositoryId=archiva.snapshots -Durl=http://192.168.1.36:8080/repository/snapshots'
+		   				}
 	   				}
 	   			}
 	  
