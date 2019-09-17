@@ -30,6 +30,11 @@
 	</distributionManagement>
 
 	<repositories>
+        <repository>
+            <id>serial.repo</id>
+            <name>serial</name>
+            <url>https://raw.githubusercontent.com/oberasoftware/zwave/master/repo/</url>
+        </repository>
 		<repository>
 			<id>internal</id>
 			<name>Archiva Managed Internal Repository</name>

@@ -5,6 +5,7 @@ pipeline {
             args '-v /var/jenkins_home/.m2:/root/.m2 -v /root/.ssh:/root/.ssh' 
         }
     }
+	 triggers { upstream(upstreamProjects: 'obera-base', threshold: hudson.model.Result.SUCCESS) }
     stages {
 		stage('Prepare') {
 		    steps {
@@ -26,26 +27,17 @@ pipeline {
 				withMaven() {
 		           	sh '$MVN_CMD -T 1C -DskipTests -B clean install'
             	}
+
             }
 
 		}
-	
-	    stage('Deploy') {
-	       parallel {
-	      		 stage('JUnit') {
-					steps {
-						junit '**/target/surefire-reports/**/*.xml'  
-		            }
-				}
-				stage('Deploy') {
-	        		steps {
-		        		withMaven() {
-		        			sh '$MVN_CMD deploy:deploy-file -Dfile=target/zwave-1.0-SNAPSHOT.jar -DpomFile=pom.xml -DrepositoryId=archiva.snapshots -Durl=http://192.168.1.36:8080/repository/snapshots'
-		   				}
-	   				}
-	   			}
+
+  		stage('JUnit') {
+			steps {
+				junit '**/target/surefire-reports/**/*.xml'  
+            }
+		}
 	  
-	   		}	
-	    }
+	
     }
 }
