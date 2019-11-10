@@ -9,8 +9,8 @@ pipeline {
     stages {
 		stage('Prepare') {
 		    steps {
-			sh 'apk update'
-			sh 'apk add rsync openssh openrc git libtool'
+			sh 'apk update && apk add rsync openssh openrc git libtool'
+			
 			
 		    } 
 		}
